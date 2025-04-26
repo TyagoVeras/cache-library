@@ -1,0 +1,6 @@
+{
+  "strategy": "node-cache",
+  "connectionUrl": "redis://localhost:6379",
+  "defaultRootKey": "app",
+  "defaultTtl": 60000
+}

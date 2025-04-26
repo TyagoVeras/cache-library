@@ -1,0 +1,30 @@
+{
+  "name": "@tyagoveras/cache-library",
+  "version": "1.0.7",
+  "description": "A simple caching library for TypeScript with decorators for method caching.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup ./index.ts --minify --dts --format cjs,esm --out-dir dist",
+    "dev": "tsx --watch ./src/example.ts",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "cache",
+    "decorator",
+    "typescript"
+  ],
+  "author": "Tyago Veras",
+  "license": "MIT",
+  "dependencies": {
+    "ioredis": "^5.5.0",
+    "node-cache": "^5.1.2",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "tsup": "^8.3.6",
+    "tsx": "^4.19.2",
+    "typescript": "^4.0.0"
+  }
+}
