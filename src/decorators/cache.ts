@@ -10,7 +10,12 @@ const strategyMap = {
   redis: RedisCacheStrategy
 };
 
-cacheStrategy = new strategyMap[cacheConfig.strategy]();
+const Strategy = strategyMap[cacheConfig.strategy];
+if (!Strategy) {
+  throw new Error(`Unsupported cache strategy: ${cacheConfig.strategy}`);
+}
+
+cacheStrategy = new Strategy();
 
 function getCacheIdentifier(cacheKey: string, args: any[]): string {
   return `${cacheKey}:${JSON.stringify(args)}`;
@@ -19,7 +24,7 @@ function getCacheIdentifier(cacheKey: string, args: any[]): string {
 export function cacheInjectable({ cacheKey, ttl }: { cacheKey: string; ttl: number }) {
   return function (target: any, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<any>) {
     const finalCacheKey = `${cacheConfig.defaultRootKey}:${cacheKey}`;
-    const finalTtl = ttl || cacheConfig.defaultTtl;
+    const finalTtl = ttl ?? cacheConfig.defaultTtl;
 
     if (descriptor && propertyKey) {
       // Method decorator
@@ -29,7 +34,7 @@ export function cacheInjectable({ cacheKey, ttl }: { cacheKey: string; ttl: numb
         const cacheIdentifier = getCacheIdentifier(finalCacheKey, args);
         const cached = await cacheStrategy.get(cacheIdentifier);
 
-        if (cached) {
+        if (cached !== null && cached !== undefined) {
           console.log('Returning cached value for', cacheIdentifier);
           return cached;
         }
@@ -52,7 +57,7 @@ export function cacheInjectable({ cacheKey, ttl }: { cacheKey: string; ttl: numb
             const cacheIdentifier = getCacheIdentifier(finalCacheKey, args);
             const cached = await cacheStrategy.get(cacheIdentifier);
 
-            if (cached) {
+            if (cached !== null && cached !== undefined) {
               console.log('Returning cached value for', cacheIdentifier);
               return cached;
             }

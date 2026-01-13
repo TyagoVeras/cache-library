@@ -27,5 +27,5 @@ export const cacheConfig: CacheConfig = {
   strategy: config.strategy,
   connectionUrl: config.connectionUrl,
   defaultRootKey: config.defaultRootKey,
-  defaultTtl: 3600
+  defaultTtl: config.defaultTtl ?? 3600
 };
