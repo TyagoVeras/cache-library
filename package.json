@@ -9,6 +9,14 @@
     "dev": "tsx --watch ./src/example.ts",
     "test": "echo \"No tests specified\" && exit 0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TyagoVeras/cache-library.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com/"
+  },
   "keywords": [
     "cache",
     "decorator",
