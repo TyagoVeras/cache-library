@@ -17,7 +17,7 @@ npm i @tyagoveras/cache-library
 You can import the library in your TypeScript project as follows:
 
 ```typescript
-import { cacheInjectable } from '@tyagoveras/cache-library';
+import { cacheInjectable, CacheInvalidate } from '@tyagoveras/cache-library';
 ```
 
 ### Using the Cache Decorator
@@ -57,6 +57,47 @@ The library uses a configuration file named `cache-config.json` to manage cache 
 ### `cacheInjectable(options: { cacheKey: string; ttl: number })`
 
 This decorator can be applied to any class method to enable caching.
+
+### `CacheInvalidate(options: CacheInvalidateOptions)`
+
+This decorator invalidates cache entries after the method executes successfully. Useful for clearing cache when data is updated or deleted.
+
+#### Options
+
+- `cacheKeys`: Array of cache keys to invalidate (uses the same key format as `cacheInjectable`)
+- `patterns`: Array of patterns to match multiple cache keys (supports wildcards with `*`)
+- `invalidateAll`: Boolean to invalidate all cache entries with the default root key
+
+#### Examples
+
+```typescript
+class UserService {
+  @cacheInjectable({ cacheKey: 'getUser', ttl: 60000 })
+  async getUser(userId: string) {
+    console.log('Fetching user from database');
+    return { id: userId, name: 'John Doe' };
+  }
+
+  @CacheInvalidate({ cacheKeys: ['getUser'] })
+  async updateUser(userId: string, data: any) {
+    console.log('Updating user in database');
+    // Update logic here
+    return { id: userId, ...data };
+  }
+
+  @CacheInvalidate({ patterns: ['getUser*', 'listUsers*'] })
+  async deleteUser(userId: string) {
+    console.log('Deleting user from database');
+    // Delete logic here
+  }
+
+  @CacheInvalidate({ invalidateAll: true })
+  async resetAllUsers() {
+    console.log('Resetting all users');
+    // Reset logic here
+  }
+}
+```
 
 ## Contributing
 

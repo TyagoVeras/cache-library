@@ -20,4 +20,15 @@ export class RedisCacheStrategy implements ICacheStrategy {
   async set(cacheIdentifier: string, value: any, ttl: number): Promise<void> {
     await this.cache.set(cacheIdentifier, JSON.stringify(value), 'PX', ttl); // ttl in milliseconds
   }
+
+  async delete(cacheIdentifier: string): Promise<void> {
+    await this.cache.del(cacheIdentifier);
+  }
+
+  async deletePattern(pattern: string): Promise<void> {
+    const keys = await this.cache.keys(pattern);
+    if (keys.length > 0) {
+      await this.cache.del(...keys);
+    }
+  }
 }
