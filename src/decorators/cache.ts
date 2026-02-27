@@ -35,14 +35,12 @@ export function cacheInjectable({ cacheKey, ttl }: { cacheKey: string; ttl: numb
         const cached = await cacheStrategy.get(cacheIdentifier);
 
         if (cached !== null && cached !== undefined) {
-          console.log('Returning cached value for', cacheIdentifier);
           return cached;
         }
 
         const result = await originalMethod.apply(this, args);
         await cacheStrategy.set(cacheIdentifier, result, finalTtl);
 
-        console.log('Caching value for', cacheIdentifier);
         return result;
       };
     } else {
@@ -58,14 +56,12 @@ export function cacheInjectable({ cacheKey, ttl }: { cacheKey: string; ttl: numb
             const cached = await cacheStrategy.get(cacheIdentifier);
 
             if (cached !== null && cached !== undefined) {
-              console.log('Returning cached value for', cacheIdentifier);
               return cached;
             }
 
             const result = await originalMethod.apply(this, args);
             await cacheStrategy.set(cacheIdentifier, result, finalTtl);
 
-            console.log('Caching value for', cacheIdentifier);
             return result;
           };
 

@@ -17,9 +17,6 @@ if (!Strategy) {
 
 cacheStrategy = new Strategy();
 
-function getCacheIdentifier(cacheKey: string, args: any[]): string {
-  return `${cacheKey}:${JSON.stringify(args)}`;
-}
 
 interface CacheInvalidateOptions {
   cacheKeys?: string[];
@@ -41,12 +38,11 @@ export function CacheInvalidate(options: CacheInvalidateOptions) {
           // Invalidate all cache entries with the default root key
           await cacheStrategy.deletePattern(`${cacheConfig.defaultRootKey}:*`);
         } else {
-          // Invalidate specific cache keys
+          // Invalidate specific cache keys (all args variants)
           if (options.cacheKeys && options.cacheKeys.length > 0) {
             for (const cacheKey of options.cacheKeys) {
-              const fullCacheKey = `${cacheConfig.defaultRootKey}:${cacheKey}`;
-              const cacheIdentifier = getCacheIdentifier(fullCacheKey, args);
-              await cacheStrategy.delete(cacheIdentifier);
+              const fullPattern = `${cacheConfig.defaultRootKey}:${cacheKey}:*`;
+              await cacheStrategy.deletePattern(fullPattern);
             }
           }
 

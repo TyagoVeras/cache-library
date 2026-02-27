@@ -18,10 +18,36 @@ function validateConfig(config: CacheConfig): void {
   }
 }
 
-const configPath = path.resolve(fs.realpathSync(process.cwd()), 'cache-config.json');
-const configFile = fs.readFileSync(configPath, 'utf-8');
-const config: CacheConfig = JSON.parse(configFile);
-validateConfig(config);
+function loadConfig(): CacheConfig {
+  // 1. Environment variables take precedence
+  if (process.env.CACHE_STRATEGY) {
+    const config: CacheConfig = {
+      strategy: process.env.CACHE_STRATEGY as 'node-cache' | 'redis',
+      connectionUrl: process.env.CACHE_CONNECTION_URL,
+      defaultRootKey: process.env.CACHE_DEFAULT_ROOT_KEY ?? 'app',
+      defaultTtl: process.env.CACHE_DEFAULT_TTL ? parseInt(process.env.CACHE_DEFAULT_TTL, 10) : 3600
+    };
+    validateConfig(config);
+    return config;
+  }
+
+  // 2. Fallback to cache-config.json in process.cwd()
+  const configPath = path.resolve(fs.realpathSync(process.cwd()), 'cache-config.json');
+
+  if (!fs.existsSync(configPath)) {
+    throw new Error(
+      `cache-config.json not found at "${configPath}". ` +
+      `Either create the file or set the CACHE_STRATEGY environment variable.`
+    );
+  }
+
+  const configFile = fs.readFileSync(configPath, 'utf-8');
+  const config: CacheConfig = JSON.parse(configFile);
+  validateConfig(config);
+  return config;
+}
+
+const config = loadConfig();
 
 export const cacheConfig: CacheConfig = {
   strategy: config.strategy,

@@ -22,7 +22,8 @@ export class NodeCacheStrategy implements ICacheStrategy {
 
   async deletePattern(pattern: string): Promise<void> {
     const keys = this.cache.keys();
-    const regex = new RegExp(pattern.replace(/\*/g, '.*'));
+    const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\*/g, '.*');
+    const regex = new RegExp(escaped);
     const keysToDelete = keys.filter((key) => regex.test(key));
     this.cache.del(keysToDelete);
   }
